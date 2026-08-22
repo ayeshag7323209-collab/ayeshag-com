@@ -1099,6 +1099,10 @@ button {
    Gallery
    ========================================================= */
 
+/* =========================================================
+   Gallery
+   ========================================================= */
+
 .gallery {
   padding: 100px 0;
   background: var(--maroon-900);
@@ -1155,33 +1159,60 @@ button {
   font-weight: 600;
 }
 
-.gallery__grid {
-  display: grid;
-  gap: 22px;
-  grid-template-columns: repeat(2, 1fr);
+/* ---------- carousel shell ----------
+   A horizontally scrolling flex track with native scroll-snap, rather than
+   a transform-driven slider — it gets touch/trackpad swipe for free, needs
+   no width/resize math, and degrades to plain scrolling if JS is slow to
+   hydrate. The arrow buttons just nudge scrollLeft by one card.
+
+   Coverflow look: cards snap to CENTER (not start), and the track's
+   left/right padding is set to exactly half the gap between a card and the
+   viewport edge, so the first and last cards can still scroll all the way
+   to center. The actual scale-up-when-centered effect is applied by JS
+   (Gallery.jsx's updateCoverflow) directly on each .gallery__card as inline
+   transform/opacity — the CSS below just gives it room and a transition to
+   land smoothly on the fade. */
+.gallery__carousel {
+  position: relative;
+}
+
+.gallery__track {
+  --card-w: clamp(190px, 62vw, 250px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 28px calc((100% - var(--card-w)) / 2) 32px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
 }
 
 .gallery__card {
+  flex: 0 0 var(--card-w);
+  scroll-snap-align: center;
+  position: relative;
   margin: 0;
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
   background: var(--ink-900);
   cursor: pointer;
+  transition: opacity 0.25s ease, box-shadow 0.25s ease;
 }
 
-.gallery__card--feature {
-  grid-column: span 2;
+.gallery__card.is-active {
+  box-shadow: 0 26px 50px rgba(0, 0, 0, 0.42);
 }
 
 .gallery__media {
   position: relative;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-}
-
-.gallery__card--feature .gallery__media {
-  aspect-ratio: 16 / 9;
 }
 
 .gallery__img {
@@ -1255,6 +1286,46 @@ button {
   color: var(--cream-100);
 }
 
+/* ---------- arrows ----------
+   Hidden below 720px on purpose: touch swipe already works on the track
+   natively there, and overlaying circular buttons on narrow card images
+   just adds clutter without adding capability. */
+.gallery__arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(36, 18, 28, 0.55);
+  color: var(--cream-100);
+  backdrop-filter: blur(4px);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.gallery__arrow:hover {
+  border-color: var(--gold-400);
+  background: rgba(36, 18, 28, 0.75);
+}
+
+.gallery__arrow:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.gallery__arrow--prev {
+  left: -8px;
+  transform: translateY(-50%);
+}
+
+.gallery__arrow--next {
+  right: -8px;
+  transform: translateY(-50%);
+}
+
 .gallery__note {
   text-align: center;
   margin-top: 40px;
@@ -1264,19 +1335,28 @@ button {
 }
 
 @media (min-width: 720px) {
-  .gallery__grid {
-    grid-template-columns: repeat(3, 1fr);
+  .gallery__track {
+    --card-w: 260px;
+    gap: 26px;
   }
-  .gallery__card--feature {
-    grid-column: span 3;
+  .gallery__arrow {
+    display: flex;
+  }
+  .gallery__arrow--prev {
+    left: -22px;
+  }
+  .gallery__arrow--next {
+    right: -22px;
   }
 }
 
 @media (min-width: 1080px) {
-  .gallery__card--feature {
-    grid-column: span 3;
+  .gallery__track {
+    --card-w: 300px;
+    gap: 32px;
   }
 }
+
 
 /* =========================================================
    Lightbox
@@ -1510,12 +1590,20 @@ button {
   color: var(--ink-900);
 }
 
+/* ---------- map ----------
+   Shared by both states (plain pin placeholder and the real Google Maps
+   embed) so swapping in brand.mapEmbedUrl doesn't require new markup.
+   aspect-ratio gives it a real height in both cases; once an iframe is
+   present it's absolutely positioned to fill that box exactly (a plain
+   width/height="100%" on an iframe won't reliably fill a parent whose
+   height come from aspect-ratio rather than an explicit px value). */
 .contact__map {
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--gradient-maroon);
-  min-height: 180px;
+  aspect-ratio: 4 / 3;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1523,6 +1611,14 @@ button {
   gap: 10px;
   color: var(--cream-100);
   font-weight: 500;
+}
+
+.contact__map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .contact__map-pin {
@@ -1611,6 +1707,7 @@ button {
     align-items: start;
   }
 }
+
 
 /* =========================================================
    Footer

@@ -79,12 +79,32 @@ export default function Contact() {
               WhatsApp Us
             </a>
 
-            <div className="contact__map" role="img" aria-label="Map location of Ayesha G Garments in New Anarkali, Lahore">
-              <div className="contact__map-pin">
-                <PinIcon width={30} height={30} />
+            {/* Real embed once brand.mapEmbedUrl is set in data/content.js
+                (see the comment there for how to get that URL from Google
+                Maps). Falls back to the plain pin placeholder until then, so
+                nothing breaks in the meantime. */}
+            {brand.mapEmbedUrl ? (
+              <div className="contact__map">
+                <iframe
+                  src={brand.mapEmbedUrl}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  title={`Map showing our location: ${brand.address}`}
+                />
               </div>
-              <span>New Anarkali, Lahore</span>
-            </div>
+            ) : (
+              <div
+                className="contact__map"
+                role="img"
+                aria-label={`Map location of Ayesha G Garments in New Anarkali, Lahore`}
+              >
+                <div className="contact__map-pin">
+                  <PinIcon width={30} height={30} />
+                </div>
+                <span>New Anarkali, Lahore</span>
+              </div>
+            )}
           </div>
 
           <form className="contact__form" onSubmit={handleSubmit}>
