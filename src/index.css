@@ -1543,11 +1543,26 @@ button {
 .contact {
   padding: 100px 0;
   background: var(--white);
+  /* Belt-and-suspenders: nothing in this section is meant to scroll
+     sideways, so if any descendant ever pushes past 100% width (a long
+     unbroken string, a stray fixed-width embed, etc.) this stops it from
+     turning into a page-wide horizontal scrollbar on mobile instead of
+     just clipping the overflow harmlessly here. */
+  overflow-x: hidden;
 }
 
 .contact__grid {
   display: grid;
   gap: 48px;
+}
+
+/* Grid (and flex) items default to min-width: auto, which means a child
+   refuses to shrink below its content's intrinsic width — a long address,
+   email, or phone string with no natural break point can then force
+   .contact__info or .contact__form wider than the viewport on mobile. This
+   overrides that default so they shrink to fit like normal block content. */
+.contact__grid > * {
+  min-width: 0;
 }
 
 .contact__list {
@@ -1561,6 +1576,12 @@ button {
   display: flex;
   gap: 16px;
   align-items: flex-start;
+}
+
+/* Same min-width: auto fix as above, one level deeper — the label+value
+   wrapper next to each icon is itself a flex child. */
+.contact__list li > div {
+  min-width: 0;
 }
 
 .contact__icon {
@@ -1588,6 +1609,10 @@ button {
   display: block;
   font-weight: 500;
   color: var(--ink-900);
+  /* Lets a long address/email/phone string wrap onto a new line instead of
+     forcing this element (and its flex/grid ancestors) wider than the
+     viewport. */
+  overflow-wrap: anywhere;
 }
 
 /* ---------- map ----------
@@ -1618,6 +1643,11 @@ button {
   inset: 0;
   width: 100%;
   height: 100%;
+  /* max-width guards against a raw width="600" HTML attribute if Google's
+     copied embed snippet was ever pasted in with its attributes intact —
+     CSS width already overrides that, this is just a second line of
+     defense so it can never win even in an unusual edge case. */
+  max-width: 100%;
   border: 0;
 }
 
@@ -1662,6 +1692,11 @@ button {
 
 .contact__field input,
 .contact__field textarea {
+  width: 100%;
+  /* Explicit in case the project-wide reset doesn't already set this — with
+     the default content-box model, this padding+border would otherwise add
+     on top of the 100% width above and push the field past its container. */
+  box-sizing: border-box;
   border: 1.5px solid var(--cream-200);
   border-radius: var(--radius-sm);
   padding: 12px 16px;
