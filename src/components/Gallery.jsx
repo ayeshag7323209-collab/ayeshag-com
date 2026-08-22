@@ -11,16 +11,25 @@ const AUTOPLAY_MS = 4000;
 const AUTOPLAY_RESUME_DELAY_MS = 5000;
 const AUTOPLAY_MIN_WIDTH_QUERY = "(min-width: 720px)";
 
+// How many card-widths out the stacking effect reaches — this is what
+// controls "a few of them" staying visible on each side rather than just
+// one clean neighbor.
+const MAX_DISTANCE = 2.2;
+
 // Measures the real on-screen spacing between two neighboring cards (their
 // width plus the gap) directly from layout instead of hardcoding it, so it
 // stays correct across the responsive --card-w/gap breakpoints in the CSS.
+// Uses offsetLeft/offsetWidth (a card's plain flow position) rather than
+// getBoundingClientRect — the latter reports the POST-transform box, and
+// since updateCoverflow below applies its own transform to every card,
+// measuring off of it would feed each frame's output back into the next
+// frame's input and the stacking effect would drift/oscillate instead of
+// settling.
 function measureCardStep(track) {
   const cards = track.querySelectorAll(".gallery__card");
   if (!cards.length) return track.clientWidth * 0.8;
-  if (cards.length === 1) return cards[0].getBoundingClientRect().width;
-  const a = cards[0].getBoundingClientRect();
-  const b = cards[1].getBoundingClientRect();
-  return b.left - a.left;
+  if (cards.length === 1) return cards[0].offsetWidth;
+  return cards[1].offsetLeft - cards[0].offsetLeft;
 }
 
 export default function Gallery() {
@@ -60,29 +69,40 @@ export default function Gallery() {
     track.scrollBy({ left: direction * step, behavior: "smooth" });
   }, []);
 
-  // Coverflow effect: on every scroll frame, scale/fade each card by its
-  // distance from the track's center so the active card reads large and
-  // sharp while its neighbors sit smaller to either side. Driven straight
-  // off scrollLeft (not React state) so it stays smooth under a finger drag
-  // and during the arrows'/autoplay's native smooth-scroll alike.
+  // Coverflow/stack effect: on every scroll frame, each card is scaled,
+  // faded, pulled in toward center, and nudged down by its distance from
+  // the track's center — so the active card reads large and sharp up
+  // front, while a few neighbors on each side sit smaller, dimmer, and
+  // tucked partly behind/beneath it rather than laid out flat side by
+  // side. Driven off plain layout geometry (offsetLeft/scrollLeft, not
+  // getBoundingClientRect) so it's unaffected by the transform it's itself
+  // writing, and stays smooth under a finger drag and the arrows'/
+  // autoplay's native smooth-scroll alike.
   const updateCoverflow = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
     const cards = track.querySelectorAll(".gallery__card");
     if (!cards.length) return;
-    const trackRect = track.getBoundingClientRect();
-    const centerX = trackRect.left + trackRect.width / 2;
     const unit = measureCardStep(track) || 1;
+    const viewportCenter = track.clientWidth / 2;
 
     cards.forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const distance = Math.min(Math.abs(cardCenterX - centerX) / unit, 1.6);
-      const scale = Math.max(1.08 - distance * 0.32, 0.62);
-      const opacity = Math.max(1 - distance * 0.45, 0.35);
-      card.style.transform = `scale(${scale.toFixed(3)})`;
+      const cardViewportCenter = card.offsetLeft - track.scrollLeft + card.offsetWidth / 2;
+      const rawOffset = (cardViewportCenter - viewportCenter) / unit;
+      const distance = Math.min(Math.abs(rawOffset), MAX_DISTANCE);
+      const direction = Math.sign(rawOffset);
+
+      const scale = Math.max(1.08 - distance * 0.24, 0.55);
+      const opacity = Math.max(1 - distance * 0.3, 0.48);
+      // Pull neighbors in toward center (so they tuck under the bigger
+      // active card instead of sitting apart from it) and nudge them down
+      // a little, reinforcing that they sit behind/beneath it.
+      const pullIn = -direction * distance * unit * 0.3;
+      const dropDown = distance * 14;
+
+      card.style.transform = `translate(${pullIn.toFixed(1)}px, ${dropDown.toFixed(1)}px) scale(${scale.toFixed(3)})`;
       card.style.opacity = opacity.toFixed(3);
-      card.style.zIndex = String(Math.round((1.6 - distance) * 10));
+      card.style.zIndex = String(Math.round((MAX_DISTANCE - distance) * 10));
       card.classList.toggle("is-active", distance < 0.15);
     });
   }, []);

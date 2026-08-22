@@ -1098,7 +1098,6 @@ button {
 /* =========================================================
    Gallery
    ========================================================= */
-
 /* =========================================================
    Gallery
    ========================================================= */
@@ -1165,25 +1164,32 @@ button {
    no width/resize math, and degrades to plain scrolling if JS is slow to
    hydrate. The arrow buttons just nudge scrollLeft by one card.
 
-   Coverflow look: cards snap to CENTER (not start), and the track's
+   Coverflow/stack look: cards snap to CENTER (not start), and the track's
    left/right padding is set to exactly half the gap between a card and the
    viewport edge, so the first and last cards can still scroll all the way
-   to center. The actual scale-up-when-centered effect is applied by JS
-   (Gallery.jsx's updateCoverflow) directly on each .gallery__card as inline
-   transform/opacity — the CSS below just gives it room and a transition to
-   land smoothly on the fade. */
+   to center. The actual scale-up/pull-in/drop-down-when-off-center effect
+   is applied by JS (Gallery.jsx's updateCoverflow) directly on each
+   .gallery__card as inline transform/opacity/z-index — the CSS below just
+   gives it room to move without being clipped, and a transition to land
+   smoothly on the fade. `position: relative` on the track makes it the
+   offsetParent for its card children, which is what lets updateCoverflow
+   read each card's plain layout position via offsetLeft. */
 .gallery__carousel {
   position: relative;
 }
 
 .gallery__track {
   --card-w: clamp(190px, 62vw, 250px);
+  position: relative;
   display: flex;
   align-items: center;
   gap: 20px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 28px calc((100% - var(--card-w)) / 2) 32px;
+  /* Extra bottom padding (vs. top) makes room for the pulled-in neighbor
+     cards' downward drop-shift without their shadow/edge getting clipped
+     by overflow-x: auto (which clips the y-axis too, per spec). */
+  padding: 24px calc((100% - var(--card-w)) / 2) 56px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -1203,6 +1209,7 @@ button {
   background: var(--ink-900);
   cursor: pointer;
   transition: opacity 0.25s ease, box-shadow 0.25s ease;
+  will-change: transform;
 }
 
 .gallery__card.is-active {
