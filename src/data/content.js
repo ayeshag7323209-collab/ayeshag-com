@@ -34,11 +34,42 @@ export const brand = {
   tagline: "Wholesale Ladies Fashion, Made in Bulk, Delivered with Pride",
   address: "2 Dhani Ram Road, New Anarkali, Lahore, Pakistan",
   established: "30+ Years",
-  phone: "[Insert Number]",
-  email: "[Insert Email]",
-  hours: "[Insert Hours]",
-  whatsapp: "#",
+  phone: "0303 0090009",
+  email: "info@ayeshag.com",
+  // wa.me link built from the phone number above in international format
+  // (92 = Pakistan, leading 0 dropped), with a short prefilled message.
+  whatsapp: "https://wa.me/923030090009?text=Hi%20Ayesha%20G%20Garments%2C%20I%27d%20like%20to%20know%20more%20about%20bulk%20orders.",
   logo,
+  // Google Maps "Embed a map" iframe src (Share > Embed a map > copy the
+  // src="..." URL, not the whole <iframe> tag). Contact.jsx sizes it to fit
+  // the site automatically via the .contact__map CSS, so only the URL is
+  // needed here — no width/height/style from Google's snippet.
+  mapEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d600.9086676236168!2d74.31205627462344!3d31.57211613093615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1788566797398!5m2!1sen!2s",
+};
+
+// Profile links for each platform's "Follow" button. Replace the "#"s with
+// the real profile URLs whenever they're ready.
+export const socialLinks = {
+  instagram: "#",
+  facebook: "#",
+  youtube: "#",
+  tiktok: "#",
+};
+
+// Drop individual post/video URLs in here to embed real reels on the site
+// (see Reels.jsx for how each URL is turned into an embed). Until a
+// platform has at least one URL, its column shows a "Follow us" card
+// linking to socialLinks above instead.
+//   instagram — full reel/post URL, e.g. "https://www.instagram.com/reel/XXXXXXXXXXX/"
+//   facebook  — full video/reel URL, e.g. "https://www.facebook.com/watch/?v=XXXXXXXXXXX"
+//   youtube   — full Shorts/video URL, e.g. "https://www.youtube.com/shorts/XXXXXXXXXXX"
+//   tiktok    — full video URL, e.g. "https://www.tiktok.com/@handle/video/XXXXXXXXXXX"
+export const socialReels = {
+  instagram: [],
+  facebook: [],
+  youtube: [],
+  tiktok: [],
 };
 
 export const navLinks = [
@@ -46,6 +77,7 @@ export const navLinks = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Gallery", href: "#gallery" },
+  { label: "Reels", href: "#reels" },
   { label: "Order", href: "#order" },
   { label: "Contact", href: "#contact" },
 ];

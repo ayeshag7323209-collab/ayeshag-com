@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { brand } from "../data/content.js";
-import { PinIcon, PhoneIcon, MailIcon, ClockIcon, WhatsappIcon, ArrowIcon } from "./Icons.jsx";
+import { PinIcon, PhoneIcon, MailIcon, WhatsappIcon, ArrowIcon } from "./Icons.jsx";
 import Reveal from "./Reveal.jsx";
 
 const initialForm = { name: "", company: "", quantity: "", message: "" };
@@ -51,7 +51,9 @@ export default function Contact() {
                 </span>
                 <div>
                   <span className="contact__label">Phone</span>
-                  <span className="contact__value">{brand.phone}</span>
+                  <a className="contact__value contact__value--link" href={`tel:${brand.phone.replace(/\s+/g, "")}`}>
+                    {brand.phone}
+                  </a>
                 </div>
               </li>
               <li>
@@ -60,16 +62,9 @@ export default function Contact() {
                 </span>
                 <div>
                   <span className="contact__label">Email</span>
-                  <span className="contact__value">{brand.email}</span>
-                </div>
-              </li>
-              <li>
-                <span className="contact__icon">
-                  <ClockIcon />
-                </span>
-                <div>
-                  <span className="contact__label">Business Hours</span>
-                  <span className="contact__value">{brand.hours}</span>
+                  <a className="contact__value contact__value--link" href={`mailto:${brand.email}`}>
+                    {brand.email}
+                  </a>
                 </div>
               </li>
             </ul>

@@ -149,6 +149,41 @@ export function ClockIcon(props) {
   );
 }
 
+export function InstagramIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+      <rect x="3" y="3" width="18" height="18" rx="5.5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function FacebookIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" {...props}>
+      <path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.26-1.6 1.63-1.6h1.74V3.53C15.8 3.4 14.8 3.3 13.7 3.3c-2.36 0-3.97 1.44-3.97 4.1v2.9H7v3.3h2.73V22Z" />
+    </svg>
+  );
+}
+
+export function YoutubeIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+      <rect x="2.5" y="5.5" width="19" height="13" rx="4" />
+      <path d="M10.5 9.3v5.4l4.8-2.7Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function TiktokIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" {...props}>
+      <path d="M16.6 2c.4 2.3 1.8 3.8 4.2 4v2.9c-1.5.1-2.9-.4-4.2-1.3v6.5c0 3.7-2.7 6.6-6.4 6.6-3.6 0-6.4-2.9-6.4-6.5 0-3.6 3-6.5 6.6-6.4v3c-.2 0-.4-.1-.6-.1-1.9 0-3.4 1.5-3.4 3.5 0 1.9 1.5 3.5 3.4 3.5 2 0 3.6-1.6 3.6-3.7V2Z" />
+    </svg>
+  );
+}
+
 export function WhatsappIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" {...props}>
