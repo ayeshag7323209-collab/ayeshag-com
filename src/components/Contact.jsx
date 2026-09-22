@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { brand } from "../data/content.js";
+import emailjs from "@emailjs/browser";
+import { brand, emailjs as emailjsConfig } from "../data/content.js";
 import { PinIcon, PhoneIcon, MailIcon, WhatsappIcon, ArrowIcon } from "./Icons.jsx";
 import Reveal from "./Reveal.jsx";
 
-const initialForm = { name: "", company: "", quantity: "", message: "" };
+const initialForm = { name: "", phone: "", message: "" };
 
 export default function Contact() {
   const [form, setForm] = useState(initialForm);
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,9 +17,24 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // No backend is wired up yet — replace this with your form endpoint,
-    // e.g. an emailjs, Formspree, or custom API call.
-    setSubmitted(true);
+    setStatus("sending");
+
+    emailjs
+      .send(
+        emailjsConfig.serviceId,
+        emailjsConfig.templateId,
+        {
+          from_name: form.name,
+          phone: form.phone,
+          message: form.message,
+        },
+        { publicKey: emailjsConfig.publicKey }
+      )
+      .then(() => setStatus("sent"))
+      .catch((err) => {
+        console.error("EmailJS send failed:", err);
+        setStatus("error");
+      });
   };
 
   return (
@@ -103,7 +119,7 @@ export default function Contact() {
           </div>
 
           <form className="contact__form" onSubmit={handleSubmit}>
-            {submitted ? (
+            {status === "sent" ? (
               <div className="contact__success">
                 <h3>Thank you!</h3>
                 <p>
@@ -115,7 +131,7 @@ export default function Contact() {
                   className="btn btn--outline btn--sm"
                   onClick={() => {
                     setForm(initialForm);
-                    setSubmitted(false);
+                    setStatus("idle");
                   }}
                 >
                   Send another inquiry
@@ -125,7 +141,7 @@ export default function Contact() {
               <>
                 <h3 className="contact__form-title">Send an Inquiry</h3>
                 <div className="contact__field">
-                  <label htmlFor="name">Full Name</label>
+                  <label htmlFor="name">Name</label>
                   <input
                     id="name"
                     name="name"
@@ -137,25 +153,15 @@ export default function Contact() {
                   />
                 </div>
                 <div className="contact__field">
-                  <label htmlFor="company">Business / Brand Name</label>
+                  <label htmlFor="phone">Phone Number</label>
                   <input
-                    id="company"
-                    name="company"
-                    type="text"
-                    value={form.company}
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    value={form.phone}
                     onChange={handleChange}
-                    placeholder="Retailer, wholesaler, or online store"
-                  />
-                </div>
-                <div className="contact__field">
-                  <label htmlFor="quantity">Estimated Quantity</label>
-                  <input
-                    id="quantity"
-                    name="quantity"
-                    type="text"
-                    value={form.quantity}
-                    onChange={handleChange}
-                    placeholder="e.g. 200 pieces"
+                    placeholder="So we can get back to you"
                   />
                 </div>
                 <div className="contact__field">
@@ -164,13 +170,26 @@ export default function Contact() {
                     id="message"
                     name="message"
                     rows={4}
+                    required
                     value={form.message}
                     onChange={handleChange}
                     placeholder="Tell us about the design, fabric, or timeline you have in mind"
                   />
                 </div>
-                <button type="submit" className="btn btn--gold btn--lg contact__submit">
-                  Send Inquiry
+
+                {status === "error" && (
+                  <p className="contact__error">
+                    Something went wrong sending your inquiry. Please try
+                    again, or reach us directly via WhatsApp or phone.
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="btn btn--gold btn--lg contact__submit"
+                  disabled={status === "sending"}
+                >
+                  {status === "sending" ? "Sending..." : "Send Inquiry"}
                   <ArrowIcon width={20} height={20} />
                 </button>
               </>

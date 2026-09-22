@@ -1737,6 +1737,17 @@ button {
   margin-top: 8px;
 }
 
+.contact__submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.contact__error {
+  color: var(--fuchsia-500, #c0316b);
+  font-size: 0.9rem;
+  margin: -6px 0 16px;
+}
+
 .contact__success {
   text-align: center;
   padding: 30px 10px;

@@ -48,6 +48,25 @@ export const brand = {
     "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d600.9086676236168!2d74.31205627462344!3d31.57211613093615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1788566797398!5m2!1sen!2s",
 };
 
+// EmailJS config for the Contact form (src/components/Contact.jsx).
+// Fill these in from your EmailJS account at https://dashboard.emailjs.com:
+//   1. Add an Email Service (e.g. Gmail) -> copy its "Service ID".
+//   2. Create an Email Template with these variables so all form fields
+//      arrive in the email: {{from_name}} {{phone}} {{message}} -> copy the
+//      template's "Template ID". Set the template's "To email" to the
+//      address inquiries should land in (e.g. brand.email above). Since the
+//      form only collects a phone number (no email), you'll call/WhatsApp
+//      the customer back rather than hitting reply.
+//   3. Account -> General -> copy the "Public Key".
+// You can hardcode the values below, or (recommended, so real keys aren't
+// committed) set VITE_EMAILJS_SERVICE_ID / VITE_EMAILJS_TEMPLATE_ID /
+// VITE_EMAILJS_PUBLIC_KEY in a local .env file — see .env.example.
+export const emailjs = {
+  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_EMAILJS_SERVICE_ID",
+  templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "YOUR_EMAILJS_TEMPLATE_ID",
+  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "YOUR_EMAILJS_PUBLIC_KEY",
+};
+
 // Profile links for each platform's "Follow" button. Replace the "#"s with
 // the real profile URLs whenever they're ready.
 export const socialLinks = {

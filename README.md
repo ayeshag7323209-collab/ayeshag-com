@@ -77,11 +77,40 @@ Search `[Insert` in `src/data/content.js` to find the remaining placeholders:
 
 - **Phone number, email, business hours** — set in the `brand` object.
 - **WhatsApp link** — set `brand.whatsapp` to your `https://wa.me/92XXXXXXXXXX` link.
-- **Contact form backend** — the inquiry form in `Contact.jsx` currently just
-  shows a success message. Wire `handleSubmit` up to a form service (Formspree,
-  EmailJS) or your own API endpoint to actually receive submissions.
 - **Map** — the contact section shows a stylized placeholder map card. Swap
   it for an embedded Google Maps iframe once you have a place link.
+
+## Contact form (EmailJS)
+
+The inquiry form in `Contact.jsx` sends submissions by email via
+[EmailJS](https://www.emailjs.com) — no backend server needed. Right now it's
+wired up with placeholder IDs, so submitting it will fail until you plug in
+your own account:
+
+1. Create a free account at [emailjs.com](https://www.emailjs.com) and add an
+   **Email Service** (e.g. connect your Gmail) — copy its **Service ID**.
+2. Create an **Email Template**. Use these variables in the template body so
+   every form field comes through: `{{from_name}}`, `{{phone}}`,
+   `{{message}}`. Set the template's **To email** to the address you want
+   inquiries sent to (e.g. `info@ayeshag.com`). The form only collects a
+   phone number (no email address), so you'll call or WhatsApp the customer
+   back rather than hitting reply. Copy the **Template ID**.
+3. Go to **Account → General** and copy your **Public Key**.
+4. Copy `.env.example` to `.env` and fill in the three values:
+
+   ```
+   VITE_EMAILJS_SERVICE_ID=service_xxxxxxx
+   VITE_EMAILJS_TEMPLATE_ID=template_xxxxxxx
+   VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxxx
+   ```
+
+   (Alternatively, hardcode them directly in the `emailjs` export in
+   `src/data/content.js` — the `.env` route just keeps real keys out of git.)
+5. Restart `npm run dev` (Vite only reads `.env` at startup) and test the
+   form. EmailJS's free tier includes 200 emails/month.
+
+If a submission fails (bad IDs, offline, over quota), the form shows an error
+message pointing the visitor to WhatsApp/phone instead of failing silently.
 
 ## About the images
 
